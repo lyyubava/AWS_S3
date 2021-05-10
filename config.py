@@ -1,0 +1,11 @@
+class Configuration:
+    BUCKET = 'data-engineering-interns.macpaw.io'
+    KEY = ''
+    aws_secret_access_key = ''
+    files_list_object_key = 'files_list.data'
+    output_filename = 'data_list'
+    directory = ''
+    password = ''
+    db = ''
+    user = ''
+    host = ''
