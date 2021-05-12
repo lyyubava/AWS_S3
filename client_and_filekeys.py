@@ -11,10 +11,3 @@ with open(config.Configuration.output_filename, 'r') as f:
     for line in f:
         line = line.strip()
         data_list.append(line)
-
-
-
-
-
-
-
