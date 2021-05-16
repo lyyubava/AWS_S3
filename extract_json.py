@@ -5,14 +5,6 @@ from db import Movies, Songs, Apps
 import pymysql
 
 
-
-
-def is_awesome(name: str) -> bool:
-    if name.startswith('U'):
-        return True
-    return False
-
-
 def insert_data_into_tables(*tables):
     for filename in os.listdir(config.Configuration.directory):
         with open(os.path.join(config.Configuration.directory, filename), 'r') as f:
