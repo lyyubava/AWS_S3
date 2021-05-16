@@ -1,6 +1,5 @@
 from pymysql import connect, Error
 from config import Configuration
-from datetime import datetime
 import re
 from datetime import datetime
 
@@ -76,14 +75,37 @@ class PrepareDataForInsertionSongs:
         return val
 
 
-class Apps(DB):
+class PrepareDataForInsertionApps:
+
+    def is_awesome(self, genre):
+        if genre == 'Games':
+            return True
+        return False
+
+    def app_insertion(self, data: dict) -> tuple:
+        try:
+            d_data = data['data']
+        except KeyError:
+            return
+
+        name = d_data.get("name", None)
+        genre = d_data.get('genre', None)
+        rating = d_data.get('rating', None)
+        version = d_data.get("version", None)
+        size_bytes = d_data.get('size_bytes', None)
+        is_awesome = self.is_awesome(genre)
+        val = (name, genre, rating, version, size_bytes, is_awesome)
+        return val
+
+
+class Apps(DB, PrepareDataForInsertionApps):
     def __init__(self):
         super().__init__()
         self.type = 'app'
 
     def create_table(self):
         try:
-            create_table_apps_query = f"CREATE TABLE IF NOT EXISTS apps.{Configuration.db}( name VARCHAR(50), " \
+            create_table_apps_query = "CREATE TABLE IF NOT EXISTS apps( name VARCHAR(50), " \
                                       "genre VARCHAR(10)," \
                                       "rating FLOAT, " \
                                       "version VARCHAR(10)," \
@@ -93,10 +115,14 @@ class Apps(DB):
         except Error as e:
             print(e)
 
-    def insert_data(self, *data):
+    def prepare_data(self, data):
+        return PrepareDataForInsertionApps.app_insertion(self, data=data)
+
+    def insert_data(self, data):
+        d = self.prepare_data(data)
         sql = "INSERT INTO `apps` (`name`, `genre`, `rating`, `version`, `size_bytes`, `is_awesome`) " \
               "VALUES (%s, %s, %s, %s, %s, %s)"
-        self.cur.execute(sql, *data)
+        self.cur.execute(sql, d)
         self.connection.commit()
 
 
