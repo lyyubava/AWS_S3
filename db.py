@@ -4,12 +4,11 @@ from datetime import datetime
 
 
 class DB:
-    def __init__(self):
-        self.connection = connect(host=Configuration.host,
-                                  user=Configuration.user,
-                                  password=Configuration.password,
-                                  db=Configuration.db)
-        self.cur = self.connection.cursor()
+    conn = connect(host=Configuration.host,
+                   user=Configuration.user,
+                   password=Configuration.password)
+
+    cur = conn.cursor()
 
     def create_db(self):
         try:
@@ -17,12 +16,21 @@ class DB:
             self.cur.execute(create_db_query)
         except Error as e:
             print(e)
+        self.connection = connect(host=Configuration.host,
+                                  user=Configuration.user,
+                                  password=Configuration.password,
+                                  db=Configuration.db)
+        return self.connection
+
+    def __init__(self):
+        self.connection = self.create_db()
+        self.cur = self.connection.cursor()
 
 
 class Apps(DB):
     def create_table(self):
         try:
-            create_table_apps_query = "CREATE TABLE IF NOT EXISTS apps( name VARCHAR(50), " \
+            create_table_apps_query = f"CREATE TABLE IF NOT EXISTS apps.{Configuration.db}( name VARCHAR(50), " \
                                       "genre VARCHAR(10)," \
                                       "rating FLOAT, " \
                                       "version VARCHAR(10)," \
@@ -41,7 +49,7 @@ class Apps(DB):
 
 class Songs(DB):
     def create_table(self):
-        create_table_songs_query = "CREATE TABLE IF NOT EXISTS songs (artist_name VARCHAR(50)," \
+        create_table_songs_query = f"CREATE TABLE IF NOT EXISTS {Configuration.db}.songs(artist_name VARCHAR(50)," \
                                    "title VARCHAR(50)," \
                                    "year INT," \
                                    "release_ VARCHAR(50)," \
@@ -73,5 +81,7 @@ class Movies(DB):
 
 if __name__ == '__main__':
     db = DB()
-    s = Songs()
-    s.insert_data(("Massive Attack", "Karmacoma", 1994, "Protection", datetime.now()))
+    db.create_db()
+    song_table = Songs()
+    song_table.create_table()
+    song_table.insert_data(("Massive Attack", "Karmacoma", 1994, "Protection", datetime.now()))
