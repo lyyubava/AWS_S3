@@ -174,10 +174,3 @@ class Movies(DB, PrepareDataForInsertionMovies):
         self.cur.execute(sql, d)
         self.connection.commit()
 
-
-if __name__ == '__main__':
-    db = DB()
-    db.create_db()
-    song_table = Songs()
-    song_table.create_table()
-    song_table.insert_data(("Massive Attack", "Karmacoma", 1994, "Protection", datetime.now()))
