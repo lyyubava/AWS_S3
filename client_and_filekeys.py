@@ -1,5 +1,6 @@
 import boto3
 import config
+
 # creation of s3 cli
 s3 = boto3.client('s3')
 s3.download_file(Bucket=config.Configuration.BUCKET, Key=config.Configuration.files_list_object_key,
